@@ -1,99 +1,300 @@
 class Song:
     def __init__(self, info):
-        self._track_id = info["track_id"]
-        self._artists = info["artists"]
-        self._album_name = info["album_name"]
-        self._track_name = info["track_name"]
-        self._popularity = info["popularity"]
-        self._duration_ms = info["duration_ms"]
-        self._explicit = info["explicit"]
-        self._danceability = info["danceability"]
-        self._energy = info["energy"]
-        self._key = info["key"]
-        self._loudness = info["loudness"]
-        self._mode = info["mode"]
-        self._speechiness = info["speechiness"]
-        self._acousticness = info["acousticness"]
-        self._instrumentalness = info["instrumentalness"]
-        self._liveness = info["liveness"]
-        self._valence = info["valence"]
-        self._tempo = info["tempo"]
-        self._time_signature = info["time_signature"]
-        self._track_genre = info["track_genre"]
+        self.__track_id = info["track_id"]
+        self.__artists = info["artists"]
+        self.__album_name = info["album_name"]
+        self.__track_name = info["track_name"]
+        self.__popularity = info["popularity"]
+        self.__duration_ms = info["duration_ms"]
+        self.__explicit = info["explicit"]
+        self.__danceability = info["danceability"]
+        self.__energy = info["energy"]
+        self.__key = info["key"]
+        self.__loudness = info["loudness"]
+        self.__mode = info["mode"]
+        self.__speechiness = info["speechiness"]
+        self.__acousticness = info["acousticness"]
+        self.__instrumentalness = info["instrumentalness"]
+        self.__liveness = info["liveness"]
+        self.__valence = info["valence"]
+        self.__tempo = info["tempo"]
+        self.__time_signature = info["time_signature"]
+        self.__track_genre = info["track_genre"]
+
+    @property
+    def track_id(self):
+        return self.__track_id
+
+    @track_id.setter
+    def track_id(self, value: str):
+        if len(value.strip()) == 0:
+            raise ValueError("You must enter at least one letter or number.")
+
+        self.__track_id = value
+
+    @property
+    def artists(self):
+        return self.__artists
+
+    @artists.setter
+    def artists(self, value: str):
+        if len(value.strip()) == 0:
+            raise ValueError("You must enter at least one letter or number.")
+
+        self.__artists = value
+
+    @property
+    def album_name(self):
+        return self.__album_name
+
+    @album_name.setter
+    def album_name(self, value: str):
+        if len(value.strip()) == 0:
+            raise ValueError("You must enter at least one letter or number.")
+
+        self.__album_name = value
+
+    @property
+    def track_name(self):
+        return self.__track_name
+
+    @track_name.setter
+    def track_name(self, value: str):
+        if len(value.strip()) == 0:
+            raise ValueError("You must enter at least one letter or number.")
+
+        self.__track_name = value
+
+    @property
+    def duration_ms(self):
+        return self.__duration_ms
+
+    @duration_ms.setter
+    def duration_ms(self, value: str):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a number.")
+
+        self.__duration_ms = value
+
+    @property
+    def mode(self):
+        return self.__mode
+
+    @mode.setter
+    def mode(self, value: str):
+        if len(value.strip()) == 0:
+            raise ValueError("You must enter at least one letter or number.")
+
+        if value != "1" and value != "0":
+            raise ValueError("The input must be 0 or 1.")
+
+        self.__mode = value
+
+    @property
+    def key(self):
+        return self.__key
+
+    @key.setter
+    def key(self, value: str):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a number.")
+
+        self.__key = value
+
+    @property
+    def instrumentalness(self):
+        return self.__instrumentalness
+
+    @instrumentalness.setter
+    def instrumentalness(self, value: str):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a number.")
+
+        if value < 0 or value > 100:
+            raise ValueError("Instrumentalness must be between 0 and 100")
+
+        self.__instrumentalness = value
+
+    @property
+    def explicit(self):
+        return self.__explicit
+
+    @explicit.setter
+    def explicit(self, value: str):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a boolean.(False/True)")
+
+        if value:
+            self.__explicit = "TRUE"
+        else:
+            self.__explicit = "FALSE"
+
+    @property
+    def tempo(self):
+        return self.__tempo
+
+    @tempo.setter
+    def tempo(self, value: str):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a number.")
+
+        self.__tempo = value
+
+    @property
+    def loudness(self):
+        return self.__loudness
+
+    @loudness.setter
+    def loudness(self, value: str):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a number.")
+
+        self.__loudness = value
+
+    @property
+    def time_signature(self):
+        return self.__time_signature
+
+    @time_signature.setter
+    def time_signature(self, value: str):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a number.")
+
+        self.__time_signature = value
+
+    @property
+    def track_genre(self):
+        return self.__track_genre
+
+    @track_genre.setter
+    def track_genre(self, value: str):
+        if len(value.strip()) == 0:
+            raise ValueError("You must enter at least one letter or number.")
+
+        self.__track_genre = value
 
     @property
     def popularity(self):
-        return self._popularity
+        return self.__popularity
 
     @popularity.setter
     def popularity(self, value):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a number.")
+
         if value < 0 or value > 100:
             raise ValueError("Popularity must be between 0 and 100")
 
-        self._popularity = value
+        self.__popularity = value
 
     @property
     def energy(self):
-        return self._energy
+        return self.__energy
 
     @energy.setter
     def energy(self, value):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a number.")
+
         if value < 0 or value > 1:
             raise ValueError("Energy must be between 0 and 1")
 
-        self._energy = value
+        self.__energy = value
 
     @property
     def danceability(self):
-        return self._danceability
+        return self.__danceability
 
     @danceability.setter
     def danceability(self, value):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a number.")
+
         if value < 0 or value > 1:
             raise ValueError("Danceability must be between 0 and 1")
 
-        self._danceability = value
+        self.__danceability = value
 
     @property
     def acousticness(self):
-        return self._acousticness
+        return self.__acousticness
 
     @acousticness.setter
     def acousticness(self, value):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a number.")
+
         if value < 0 or value > 1:
             raise ValueError("Acousticness must be between 0 and 1")
 
-        self._acousticness = value
+        self.__acousticness = value
 
     @property
     def valence(self):
-        return self._valence
+        return self.__valence
 
     @valence.setter
     def valence(self, value):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a number.")
+
         if value < 0 or value > 1:
             raise ValueError("Valence must be between 0 and 1")
 
-        self._valence = value
+        self.__valence = value
 
     @property
     def liveness(self):
-        return self._liveness
+        return self.__liveness
 
     @liveness.setter
     def liveness(self, value):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a number.")
+
         if value < 0 or value > 1:
             raise ValueError("Liveness must be between 0 and 1")
 
-        self._liveness = value
+        self.__liveness = value
 
     @property
     def speechiness(self):
-        return self._speechiness
+        return self.__speechiness
 
     @speechiness.setter
     def speechiness(self, value):
+        try:
+            value = eval(value)
+        except:
+            raise ValueError("The input must be a number.")
+
         if value < 0 or value > 1:
             raise ValueError("Speechiness must be between 0 and 1")
 
-        self._speechiness = value
+        self.__speechiness = value
