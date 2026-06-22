@@ -298,3 +298,172 @@ class Song:
             raise ValueError("Speechiness must be between 0 and 1")
 
         self.__speechiness = value
+
+    @staticmethod
+    def create_from_input():
+        song = Song(
+            {
+                "track_id": None,
+                "artists": None,
+                "album_name": None,
+                "track_name": None,
+                "popularity": None,
+                "duration_ms": None,
+                "explicit": None,
+                "danceability": None,
+                "energy": None,
+                "key": None,
+                "loudness": None,
+                "mode": None,
+                "speechiness": None,
+                "acousticness": None,
+                "instrumentalness": None,
+                "liveness": None,
+                "valence": None,
+                "tempo": None,
+                "time_signature": None,
+                "track_genre": None,
+            }
+        )
+
+        while True:
+            try:
+                song.track_id = input("Enter Track ID:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.artists = input("Enter Artists:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.album_name = input("Enter Album Name:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.track_name = input("Enter Track Name:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.popularity = input("Enter Popularity:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.duration_ms = input("Enter Duration_ms:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.explicit = input("Enter Explicit:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.danceability = input("Enter Danceability:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.energy = input("Enter Energy:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.key = input("Enter Key:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.loudness = input("Enter Loudness:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.mode = input("Enter Mode:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.speechiness = input("Enter Speechiness:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.acousticness = input("Enter Acousticness:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.instrumentalness = input("Enter Instrumentalness:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.liveness = input("Enter Liveness:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.valence = input("Enter Valence:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.tempo = input("Enter Tempo:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.time_signature = input("Enter Time Signature:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        while True:
+            try:
+                song.track_genre = input("Enter Track Genre:\t")
+                break
+            except ValueError as e:
+                print(f"Error: {e}")
+
+        return song
