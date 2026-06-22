@@ -1,10 +1,27 @@
 from abc import ABC, abstractmethod
+from src.data_loader import DataLoader
+from src.song import Song
 import numpy as np
 import pandas as pd
 from sklearn.impute import KNNImputer
 from scipy.stats import zscore
 
-#Missing Values
+
+# Missing Value
+def nan_remover(df: pd.DataFrame):
+    cols = df.columns
+    numeric_cols = df.select_dtypes("number").columns
+
+    for col in cols:
+        if col in numeric_cols:
+            continue
+
+        bool_series = pd.isnull(df[col])
+        df = df[~bool_series]
+
+    return df
+
+
 class BaseImputer(ABC):
     @abstractmethod
     def impute(self, df: pd.DataFrame):
@@ -26,6 +43,7 @@ class KNNDataImputer(BaseImputer):
         imputer = KNNImputer(n_neighbors=k)
 
         return pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
+
 
 # Outlier Values
 class BaseOutlierHandler(ABC):
