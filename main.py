@@ -1,6 +1,7 @@
 import src.data_cleaner as dc
 from src.data_loader import DataLoader
 from src.song import Song
+from src.data_analyzer import DataAnalyzer
 from src.data_writer import write_on_file
 
 # CLI Dashboard
@@ -13,7 +14,7 @@ while True:
     print("2.Clean Missing Values")
     print("3.Handle Outliers")
     print("4.Add a New Song to the Dataset")
-    print("5.Exit")
+    print("6.Exit")
     print("=" * 30)
 
     choice = input("Enter Your Choice(1-5):\t")
@@ -57,4 +58,5 @@ while True:
     elif choice == "4":
         song = Song.create_from_input()
         loader.append_song(song)
-F
+    else:
+        exit()
