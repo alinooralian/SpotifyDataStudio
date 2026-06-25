@@ -2,6 +2,7 @@ import src.data_cleaner as dc
 from src.data_loader import DataLoader
 from src.song import Song
 from src.data_analyzer import DataAnalyzer
+from src.data_visualizer import DataVisualizer
 from src.data_writer import write_on_file
 
 
@@ -34,6 +35,7 @@ while True:
             "Handle Outliers",
             "Add a New Song to the Dataset",
             "Calculate Genre Insights & Correaltion Matrix",
+            "Generate Advanced Visualizations",
             "Exit",
         ]
     )
@@ -258,5 +260,59 @@ while True:
                     print(f"{key}:\n{val}\n")
         elif choice == 3:
             print(analyzer.correlation_matrix())
+    elif choice == 6:
+        visualizer = DataVisualizer(loader.df)
+
+        choice = menu(["Histogram", "Box-Plot", "Scatter Plot", "Heatmap", "Pie Plot"])
+
+        if choice == 1:
+            options = [
+                "Popularity",
+                "Loudness",
+                "Danceability",
+                "Energy",
+                "Speechiness",
+                "Acousticness",
+                "Instrumentalness",
+                "Liveness",
+            ]
+            choice = menu(options)
+
+            visualizer.histogram(options[choice - 1].lower())
+        elif choice == 2:
+            options = [
+                "Popularity",
+                "Loudness",
+                "Danceability",
+                "Energy",
+                "Speechiness",
+                "Acousticness",
+                "Instrumentalness",
+                "Liveness",
+            ]
+            choice = menu(options)
+
+            visualizer.box_plot(options[choice - 1].lower())
+        elif choice == 3:
+            options = [
+                "Popularity",
+                "Loudness",
+                "Danceability",
+                "Energy",
+                "Speechiness",
+                "Acousticness",
+                "Instrumentalness",
+                "Liveness",
+            ]
+            print("X axis...")
+            choice_1 = menu(options)
+            print("Y axis...")
+            choice_2 = menu(options)
+
+            visualizer.scatter(options[choice_1 - 1].lower(), options[choice_2 - 1].lower())
+        elif choice == 4:
+            visualizer.heatmap()
+        elif choice == 5:
+            visualizer.top_genre()
     else:
         exit()
