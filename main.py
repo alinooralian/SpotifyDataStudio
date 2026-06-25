@@ -4,35 +4,51 @@ from src.song import Song
 from src.data_analyzer import DataAnalyzer
 from src.data_writer import write_on_file
 
+
+def menu(options):
+    while True:
+        n = len(options)
+
+        for idx, option in enumerate(options, 1):
+            print(f"{idx}.{option}")
+
+        print("=" * 30)
+
+        choice = input(f"Enter Your Choice(1-{n}):\t")
+
+        if int(choice) in range(1, n + 1):
+            return int(choice)
+        else:
+            print("Error: Your Input is Invalid! Please Try again")
+
+
 # CLI Dashboard
 loader = DataLoader()
 
 while True:
     print("=" * 5, "Spotify Data Studio", "=" * 5)
+    choice = menu(
+        [
+            "Load Dataset & View Missing Vlues Report",
+            "Clean Missing Values",
+            "Handle Outliers",
+            "Add a New Song to the Dataset",
+            "Calculate Genre Insights & Correaltion Matrix",
+            "Exit",
+        ]
+    )
 
-    print("1.Load Dataset & View Missing Vlues Report")
-    print("2.Clean Missing Values")
-    print("3.Handle Outliers")
-    print("4.Add a New Song to the Dataset")
-    print("6.Exit")
-    print("=" * 30)
-
-    choice = input("Enter Your Choice(1-5):\t")
-
-    if choice == "1":
+    if choice == 1:
         if not loader.missing_value_report():
             print("There is no missing value.")
-    elif choice == "2":
+    elif choice == 2:
         loader.df = dc.nan_remover(loader.df)
 
-        print("1.Mean\n2.Median\n3.KNN")
-        print("=" * 30)
+        choice = menu(["Mean", "Median", "KNN"])
 
-        choice = input("Enter Your Choice(1-3):\t")
-
-        if choice == "1":
+        if choice == 1:
             loader.df = dc.MeanDataImputer().impute(loader.df)
-        elif choice == "2":
+        elif choice == 2:
             loader.df = dc.MedianDataImputer().impute(loader.df)
         else:
             k = int(input("Please Enter K(Recommended -> 5):\t"))
@@ -40,13 +56,10 @@ while True:
 
         write_on_file(loader.df)
         loader.create_song_obj()
-    elif choice == "3":
-        print("1.IQR\n2.ZScore")
-        print("=" * 30)
+    elif choice == 3:
+        choice = menu(["1.IQR", "2.ZScore"])
 
-        choice = input("Enter Your Choice(1-2):\t")
-
-        if choice == "1":
+        if choice == 1:
             factor = float(input("Please Enter Factor(Recommended -> 1.5)\t"))
             loader.df = dc.IQROutlierHandler().handle(loader.df, factor)
         else:
@@ -55,8 +68,195 @@ while True:
 
         write_on_file(loader.df)
         loader.create_song_obj()
-    elif choice == "4":
+    elif choice == 4:
         song = Song.create_from_input()
         loader.append_song(song)
+    elif choice == 5:
+        analyzer = DataAnalyzer(loader.df)
+
+        choice = menu(["General Insights", "Genre Insights", "Correlation Matrix"])
+
+        if choice == 1:
+            choice = menu(
+                [
+                    "Popularity",
+                    "Energy",
+                    "Duration",
+                    "Danceability",
+                    "Tempo",
+                    "Track Genre",
+                    "Summary",
+                ]
+            )
+
+            if choice == 1:
+                methods = [
+                    analyzer.most_popular_track,
+                    analyzer.least_popular_track,
+                    analyzer.average_popularity,
+                    analyzer.most_popular_genre,
+                ]
+                choice = menu(
+                    [
+                        "Most Popular Track",
+                        "Least Popular Track",
+                        "Average Popularity",
+                        "Most Popular Genre",
+                    ]
+                )
+
+                print(methods[choice - 1]())
+            elif choice == 2:
+                methods = [
+                    analyzer.most_energetic_track,
+                    analyzer.least_energetic_track,
+                    analyzer.average_energy,
+                ]
+                choice = menu(
+                    [
+                        "Most Energetic Track",
+                        "Least Energetic Track",
+                        "Average Energy",
+                    ]
+                )
+
+                print(methods[choice - 1]())
+            elif choice == 3:
+                methods = [
+                    analyzer.longest_track,
+                    analyzer.shortest_track,
+                    analyzer.average_duration,
+                ]
+                choice = menu(["Longest Track", "Shortest Track", "Average Duration"])
+
+                print(methods[choice - 1]())
+            elif choice == 4:
+                methods = [
+                    analyzer.most_danceable_track,
+                    analyzer.least_danceable_track,
+                ]
+                choice = menu(["Most Danceable Track", "Least Danceable Track"])
+
+                print(methods[choice - 1]())
+            elif choice == 5:
+                methods = [analyzer.highest_tempo_track, analyzer.lowest_tempo_track]
+                choice = menu(["Highest Tempo Track", "Lowest Tempo Track"])
+
+                print(methods[choice - 1]())
+            elif choice == 6:
+                methods = [
+                    analyzer.most_common_genre,
+                    analyzer.number_tracks_of_each_genre,
+                ]
+                choice = menu(["Most Common Genre", "Number of Tracks in each Genre"])
+
+                print(methods[choice - 1]())
+            else:
+                summary = analyzer.summary_report()
+
+                for key, val in summary.items():
+                    print(f"{key}:\n{val}\n")
+        elif choice == 2:
+            genre = input(
+                "Enter Your desired Genre(Input must consist of lowercase letters.):\t"
+            )
+            print("=" * 30)
+
+            if analyzer.number_of_tracks_per_genre(genre) == 0:
+                print(
+                    "There is no information for this genre! Either change the input type or select another genre."
+                )
+                continue
+
+            choice = menu(
+                [
+                    "Popularity",
+                    "Energy",
+                    "Duration",
+                    "Danceability",
+                    "Tempo",
+                    "Track Genre",
+                    "Artists",
+                    "Summary",
+                ]
+            )
+
+            if choice == 1:
+                methods = [
+                    analyzer.most_popular_track_per_genre,
+                    analyzer.least_popular_track_per_genre,
+                    analyzer.average_popularity_per_genre,
+                ]
+                choice = menu(
+                    [
+                        "Most Popular Track",
+                        "Least Popular Track",
+                        "Average Popularity",
+                    ]
+                )
+
+                print(methods[choice - 1](genre))
+            elif choice == 2:
+                methods = [
+                    analyzer.most_energetic_track_per_genre,
+                    analyzer.least_energetic_track_per_genre,
+                    analyzer.average_energy_per_genre,
+                ]
+                choice = menu(
+                    [
+                        "Most Energetic Track",
+                        "Least Energetic Track",
+                        "Average Energy",
+                    ]
+                )
+
+                print(methods[choice - 1](genre))
+            elif choice == 3:
+                methods = [
+                    analyzer.longest_track_per_genre,
+                    analyzer.shortest_track_per_genre,
+                    analyzer.average_duration_per_genre,
+                ]
+                choice = menu(["Longest Track", "Shortest Track", "Average Duration"])
+
+                print(methods[choice - 1](genre))
+            elif choice == 4:
+                methods = [
+                    analyzer.most_danceable_track_per_genre,
+                    analyzer.least_danceable_track_per_genre,
+                    analyzer.average_danceability_per_genre,
+                ]
+                choice = menu(
+                    [
+                        "Most Danceable Track",
+                        "Least Danceable Track",
+                        "Average Danceability",
+                    ]
+                )
+
+                print(methods[choice - 1](genre))
+            elif choice == 5:
+                methods = [
+                    analyzer.highest_tempo_track_per_genre,
+                    analyzer.lowest_tempo_track_per_genre,
+                    analyzer.average_tempo_per_genre,
+                ]
+                choice = menu(
+                    ["Highest Tempo Track", "Lowest Tempo Track", "Average Tempo"]
+                )
+
+                print(methods[choice - 1](genre))
+            elif choice == 6:
+                methods = [analyzer.number_of_tracks_per_genre]
+                choice = menu(["Number of Tracks in this Genre"])
+
+                print(methods[choice - 1](genre))
+            else:
+                summary = analyzer.summary_report_per_genre(genre)
+
+                for key, val in summary.items():
+                    print(f"{key}:\n{val}\n")
+        elif choice == 3:
+            print(analyzer.correlation_matrix())
     else:
         exit()

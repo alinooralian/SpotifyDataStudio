@@ -9,10 +9,10 @@ class DataAnalyzer:
         return len(self.df)
 
     # popularity
-    def maximum_popularity(self):
+    def most_popular_track(self):
         return self.df.loc[self.df["popularity"].idxmax()]
 
-    def minimum_popularity(self):
+    def least_popular_track(self):
         return self.df.loc[self.df["popularity"].idxmin()]
 
     def average_popularity(self):
@@ -37,10 +37,10 @@ class DataAnalyzer:
         return genre_tracks["popularity"].mean()
 
     # energy
-    def maximum_energy(self):
+    def most_energetic_track(self):
         return self.df.loc[self.df["energy"].idxmax()]
 
-    def minimum_energy(self):
+    def least_energetic_track(self):
         return self.df.loc[self.df["energy"].idxmin()]
 
     def average_energy(self):
@@ -62,10 +62,10 @@ class DataAnalyzer:
         return genre_tracks["energy"].mean()
 
     # duration
-    def maximum_duration(self):
+    def longest_track(self):
         return self.df.loc[self.df["duration_ms"].idxmax()]
 
-    def minimum_duration(self):
+    def shortest_track(self):
         return self.df.loc[self.df["duration_ms"].idxmin()]
 
     def average_duration(self):
@@ -87,10 +87,10 @@ class DataAnalyzer:
         return genre_tracks["duration_ms"].mean()
 
     # danceability
-    def maximum_danceability(self):
+    def most_danceable_track(self):
         return self.df.loc[self.df["danceability"].idxmax()]
 
-    def minimum_danceability(self):
+    def least_danceable_track(self):
         return self.df.loc[self.df["danceability"].idxmin()]
 
     def most_danceable_track_per_genre(self, genre):
@@ -109,13 +109,13 @@ class DataAnalyzer:
         return genre_tracks["danceability"].mean()
 
     # tempo
-    def maximum_tempo(self):
+    def highest_tempo_track(self):
         return self.df.loc[self.df["tempo"].idxmax()]
 
-    def minimum_tempo(self):
+    def lowest_tempo_track(self):
         return self.df.loc[self.df["tempo"].idxmin()]
 
-    def highest_tempo_per_genre(self, genre):
+    def highest_tempo_track_per_genre(self, genre):
         genre_tracks = self.df[self.df["track_genre"] == genre]
 
         return genre_tracks.loc[genre_tracks["tempo"].idxmax()]
@@ -151,24 +151,28 @@ class DataAnalyzer:
 
         return genre_tracks["artists"].mode()[0]
 
+    # correlation matrix
+    def correlation_matrix(self):
+        return self.df.corr(numeric_only=True)
+
     # summary
     def summary_report(self):
         report = {
             "Total Tracks": self.total_tracks(),
             "Average Popularity": self.average_popularity(),
-            "Most Popular Track": self.maximum_popularity(),
-            "Least Popular Track": self.minimum_popularity(),
+            "Most Popular Track": self.most_popular_track(),
+            "Least Popular Track": self.least_popular_track(),
             "Most Popular Genre": self.most_popular_genre(),
             "Average Energy": self.average_energy(),
-            "Most Energetic Track": self.maximum_energy(),
-            "Least Energetic Track": self.minimum_energy(),
-            "Most Danceable Track": self.maximum_danceability(),
-            "Least Danceable Track": self.minimum_danceability(),
-            "Longest Track": self.maximum_duration(),
-            "Shortest Track": self.minimum_duration(),
+            "Most Energetic Track": self.most_energetic_track(),
+            "Least Energetic Track": self.least_energetic_track(),
+            "Most Danceable Track": self.most_danceable_track(),
+            "Least Danceable Track": self.least_danceable_track(),
+            "Longest Track": self.longest_track(),
+            "Shortest Track": self.shortest_track(),
             "Average Durations": self.average_duration(),
-            "Highest Tempo Track": self.maximum_tempo(),
-            "Lowest Tempo Track": self.minimum_tempo(),
+            "Highest Tempo Track": self.highest_tempo_track(),
+            "Lowest Tempo Track": self.lowest_tempo_track(),
             "Most Common Genre": self.most_common_genre(),
         }
 
@@ -189,7 +193,7 @@ class DataAnalyzer:
             "Longest Track": self.longest_track_per_genre(genre),
             "Shortest Track": self.shortest_track_per_genre(genre),
             "Average Durations": self.average_duration_per_genre(genre),
-            "Highest Tempo Track": self.highest_tempo_per_genre(genre),
+            "Highest Tempo Track": self.highest_tempo_track_per_genre(genre),
             "Lowest Tempo Track": self.lowest_tempo_track_per_genre(genre),
             "Most Active Artist": self.most_active_artist_per_genre(genre),
         }
