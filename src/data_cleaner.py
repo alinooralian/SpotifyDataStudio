@@ -40,9 +40,18 @@ class MedianDataImputer(BaseImputer):
 
 class KNNDataImputer(BaseImputer):
     def impute(self, df: pd.DataFrame, k=5):
-        imputer = KNNImputer(n_neighbors=k)
+        numeric_cols = df.select_dtypes("number").columns
+        numeric_features = df[numeric_cols]
 
-        return pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
+        imputer = KNNImputer(n_neighbors=k)
+        numeric_df = pd.DataFrame(
+            imputer.fit_transform(numeric_features), columns=numeric_cols
+        )
+
+        new_df = df.copy()
+        new_df[numeric_cols] = numeric_df
+
+        return new_df
 
 
 # Outlier Values

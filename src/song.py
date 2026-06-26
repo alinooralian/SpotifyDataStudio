@@ -185,7 +185,7 @@ class Song:
         if len(value.strip()) == 0:
             raise ValueError("You must enter at least one letter or number.")
 
-        self.__track_genre = value.lower()
+        self.__track_genre = value
 
     @property
     def popularity(self):

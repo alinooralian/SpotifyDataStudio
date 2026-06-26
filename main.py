@@ -4,6 +4,13 @@ from src.song import Song
 from src.data_analyzer import DataAnalyzer
 from src.data_visualizer import DataVisualizer
 from src.data_writer import write_on_file
+from time import sleep
+import os
+
+
+def clean(t=0):
+    sleep(t)
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 def menu(options):
@@ -18,9 +25,11 @@ def menu(options):
         choice = input(f"Enter Your Choice(1-{n}):\t")
 
         if int(choice) in range(1, n + 1):
+            clean()
             return int(choice)
         else:
             print("Error: Your Input is Invalid! Please Try again")
+            clean(2)
 
 
 # CLI Dashboard
@@ -43,6 +52,9 @@ while True:
     if choice == 1:
         if not loader.missing_value_report():
             print("There is no missing value.")
+            clean(2)
+        else:
+            input("\n\n\nPress ENTER to return...")
     elif choice == 2:
         loader.df = dc.nan_remover(loader.df)
 
@@ -58,8 +70,10 @@ while True:
 
         write_on_file(loader.df)
         loader.create_song_obj()
+
+        clean()
     elif choice == 3:
-        choice = menu(["1.IQR", "2.ZScore"])
+        choice = menu(["IQR", "ZScore"])
 
         if choice == 1:
             factor = float(input("Please Enter Factor(Recommended -> 1.5)\t"))
@@ -70,9 +84,13 @@ while True:
 
         write_on_file(loader.df)
         loader.create_song_obj()
+
+        clean()
     elif choice == 4:
         song = Song.create_from_input()
         loader.append_song(song)
+
+        clean()
     elif choice == 5:
         analyzer = DataAnalyzer(loader.df)
 
@@ -108,6 +126,7 @@ while True:
                 )
 
                 print(methods[choice - 1]())
+                input("\n\n\nPress ENTER to return...")
             elif choice == 2:
                 methods = [
                     analyzer.most_energetic_track,
@@ -123,6 +142,7 @@ while True:
                 )
 
                 print(methods[choice - 1]())
+                input("\n\n\nPress ENTER to return...")
             elif choice == 3:
                 methods = [
                     analyzer.longest_track,
@@ -132,6 +152,7 @@ while True:
                 choice = menu(["Longest Track", "Shortest Track", "Average Duration"])
 
                 print(methods[choice - 1]())
+                input("\n\n\nPress ENTER to return...")
             elif choice == 4:
                 methods = [
                     analyzer.most_danceable_track,
@@ -140,11 +161,13 @@ while True:
                 choice = menu(["Most Danceable Track", "Least Danceable Track"])
 
                 print(methods[choice - 1]())
+                input("\n\n\nPress ENTER to return...")
             elif choice == 5:
                 methods = [analyzer.highest_tempo_track, analyzer.lowest_tempo_track]
                 choice = menu(["Highest Tempo Track", "Lowest Tempo Track"])
 
                 print(methods[choice - 1]())
+                input("\n\n\nPress ENTER to return...")
             elif choice == 6:
                 methods = [
                     analyzer.most_common_genre,
@@ -153,11 +176,14 @@ while True:
                 choice = menu(["Most Common Genre", "Number of Tracks in each Genre"])
 
                 print(methods[choice - 1]())
+                input("\n\n\nPress ENTER to return...")
             else:
                 summary = analyzer.summary_report()
 
                 for key, val in summary.items():
                     print(f"{key}:\n{val}\n")
+
+                input("\n\n\nPress ENTER to return...")
         elif choice == 2:
             genre = input(
                 "Enter Your desired Genre(Input must consist of lowercase letters.):\t"
@@ -168,6 +194,7 @@ while True:
                 print(
                     "There is no information for this genre! Either change the input type or select another genre."
                 )
+                clean(2)
                 continue
 
             choice = menu(
@@ -198,6 +225,7 @@ while True:
                 )
 
                 print(methods[choice - 1](genre))
+                input("\n\n\nPress ENTER to return...")
             elif choice == 2:
                 methods = [
                     analyzer.most_energetic_track_per_genre,
@@ -213,6 +241,7 @@ while True:
                 )
 
                 print(methods[choice - 1](genre))
+                input("\n\n\nPress ENTER to return...")
             elif choice == 3:
                 methods = [
                     analyzer.longest_track_per_genre,
@@ -222,6 +251,7 @@ while True:
                 choice = menu(["Longest Track", "Shortest Track", "Average Duration"])
 
                 print(methods[choice - 1](genre))
+                input("\n\n\nPress ENTER to return...")
             elif choice == 4:
                 methods = [
                     analyzer.most_danceable_track_per_genre,
@@ -237,6 +267,7 @@ while True:
                 )
 
                 print(methods[choice - 1](genre))
+                input("\n\n\nPress ENTER to return...")
             elif choice == 5:
                 methods = [
                     analyzer.highest_tempo_track_per_genre,
@@ -248,18 +279,23 @@ while True:
                 )
 
                 print(methods[choice - 1](genre))
+                input("\n\n\nPress ENTER to return...")
             elif choice == 6:
                 methods = [analyzer.number_of_tracks_per_genre]
                 choice = menu(["Number of Tracks in this Genre"])
 
                 print(methods[choice - 1](genre))
+                input("\n\n\nPress ENTER to return...")
             else:
                 summary = analyzer.summary_report_per_genre(genre)
 
                 for key, val in summary.items():
                     print(f"{key}:\n{val}\n")
+
+                input("\n\n\nPress ENTER to return...")
         elif choice == 3:
             print(analyzer.correlation_matrix())
+            input("\n\n\nPress ENTER to return...")
     elif choice == 6:
         visualizer = DataVisualizer(loader.df)
 
@@ -309,10 +345,14 @@ while True:
             print("Y axis...")
             choice_2 = menu(options)
 
-            visualizer.scatter(options[choice_1 - 1].lower(), options[choice_2 - 1].lower())
+            visualizer.scatter(
+                options[choice_1 - 1].lower(), options[choice_2 - 1].lower()
+            )
         elif choice == 4:
             visualizer.heatmap()
         elif choice == 5:
             visualizer.top_genre()
     else:
         exit()
+
+    clean()
