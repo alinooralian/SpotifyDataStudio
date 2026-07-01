@@ -1,27 +1,29 @@
 from abc import ABC, abstractmethod
-from src.data_loader import DataLoader
-from src.song import Song
 import numpy as np
 import pandas as pd
 from sklearn.impute import KNNImputer
 from scipy.stats import zscore
 
 
+class PreProcessor:
+    def duplicate_remover(self, df: pd.DataFrame):
+        return df.drop_duplicates()
+
+    def nan_remover(self, df: pd.DataFrame):
+        cols = df.columns
+        numeric_cols = df.select_dtypes("number").columns
+
+        for col in cols:
+            if col in numeric_cols:
+                continue
+
+            bool_series = pd.isnull(df[col])
+            df = df[~bool_series]
+
+        return df
+
+
 # Missing Value
-def nan_remover(df: pd.DataFrame):
-    cols = df.columns
-    numeric_cols = df.select_dtypes("number").columns
-
-    for col in cols:
-        if col in numeric_cols:
-            continue
-
-        bool_series = pd.isnull(df[col])
-        df = df[~bool_series]
-
-    return df
-
-
 class BaseImputer(ABC):
     @abstractmethod
     def impute(self, df: pd.DataFrame):
@@ -60,10 +62,14 @@ class BaseOutlierHandler(ABC):
     def handle(self, df: pd.DataFrame):
         pass
 
+    def categories_df(self, df: pd.DataFrame, category):
+        categories_df = df.select_dtypes(category)
+        return categories_df
+
 
 class IQROutlierHandler(BaseOutlierHandler):
     def handle(self, df: pd.DataFrame, factor=1.5):
-        numeric_cols = df.select_dtypes("number").columns
+        numeric_cols = self.categories_df(df, "number").columns
 
         for col in numeric_cols:
             Q1 = df[col].quantile(0.25)
@@ -82,7 +88,7 @@ class IQROutlierHandler(BaseOutlierHandler):
 
 class ZScoreOutlierHandler(BaseOutlierHandler):
     def handle(self, df: pd.DataFrame, threshold=3):
-        numeric_cols = df.select_dtypes("number").columns
+        numeric_cols = self.categories_df(df, "number").columns
 
         for col in numeric_cols:
             z_score = np.abs(zscore(df[col], nan_policy="omit"))
@@ -90,5 +96,22 @@ class ZScoreOutlierHandler(BaseOutlierHandler):
             mask = z_score > threshold
 
             df.loc[mask, col] = np.nan
+
+        return df
+
+
+class Winsorization(BaseOutlierHandler):
+    def handle(self, df: pd.DataFrame):
+        numeric_cols = self.categories_df(df, "number").columns
+
+        for col in numeric_cols:
+            Q1 = df[col].quantile(0.25)
+            Q3 = df[col].quantile(0.75)
+            IQR = Q3 - Q1
+
+            lower_bound = Q1 - IQR * (1.5)
+            upper_bound = Q3 + IQR * (1.5)
+
+            df[col] = df[col].clip(lower_bound, upper_bound)
 
         return df

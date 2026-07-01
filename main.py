@@ -36,6 +36,8 @@ def menu(options):
 loader = DataLoader()
 
 while True:
+    clean()
+
     print("=" * 5, "Spotify Data Studio", "=" * 5)
     choice = menu(
         [
@@ -56,7 +58,8 @@ while True:
         else:
             input("\n\n\nPress ENTER to return...")
     elif choice == 2:
-        loader.df = dc.nan_remover(loader.df)
+        loader.df = dc.PreProcessor().nan_remover(loader.df)
+        loader.df = dc.PreProcessor().duplicate_remover(loader.df)
 
         choice = menu(["Mean", "Median", "KNN"])
 
@@ -65,7 +68,13 @@ while True:
         elif choice == 2:
             loader.df = dc.MedianDataImputer().impute(loader.df)
         else:
-            k = int(input("Please Enter K(Recommended -> 5):\t"))
+            while True:
+                try:
+                    k = int(input("Please Enter K(Recommended -> 5):\t"))
+                    break
+                except:
+                    print("Error: Your input is invalid! Please try again.")
+
             loader.df = dc.KNNDataImputer().impute(loader.df, k)
 
         write_on_file(loader.df)
@@ -73,14 +82,30 @@ while True:
 
         clean()
     elif choice == 3:
-        choice = menu(["IQR", "ZScore"])
+        choice = menu(["IQR", "ZScore", "Winsorization"])
 
         if choice == 1:
-            factor = float(input("Please Enter Factor(Recommended -> 1.5)\t"))
+            while True:
+                try:
+                    factor = float(input("Please Enter Factor(Recommended -> 1.5):\t"))
+                    break
+                except:
+                    print("Error: Your input is invalid! Please try again.")
+
             loader.df = dc.IQROutlierHandler().handle(loader.df, factor)
-        else:
-            threshold = float(input("Please Enter Threshold(Recommended -> 3)\t"))
+        elif choice == 2:
+            while True:
+                try:
+                    threshold = float(
+                        input("Please Enter Threshold(Recommended -> 3):\t")
+                    )
+                    break
+                except:
+                    print("Error: Your input is invalid! Please try again.")
+
             loader.df = dc.ZScoreOutlierHandler().handle(loader.df, threshold)
+        else:
+            loader.df = dc.Winsorization().handle(loader.df)
 
         write_on_file(loader.df)
         loader.create_song_obj()
@@ -354,5 +379,3 @@ while True:
             visualizer.top_genre()
     else:
         exit()
-
-    clean()

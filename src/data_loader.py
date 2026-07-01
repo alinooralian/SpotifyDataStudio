@@ -2,13 +2,26 @@ import pandas as pd
 import csv
 from src.song import Song
 
+from pathlib import Path
+import sys
+
+
+def resource_path(relative_path):
+    if hasattr(sys, "_MEIPASS"):
+        return Path(sys._MEIPASS) / relative_path
+    return Path(__file__).resolve().parent.parent / relative_path
+
+
+dataset_path = resource_path("data/dataset.csv")
+
 
 class DataLoader:
     songs = []
 
     def __init__(self):
-        with open("./data/dataset.csv", "r", encoding="utf-8") as f:
+        with open(dataset_path, "r", encoding="utf-8") as f:
             self.df = pd.read_csv(f, usecols=lambda col: col != "Unnamed: 0")
+            f.close()
 
     def missing_value_report(self):
         check = False
@@ -21,7 +34,7 @@ class DataLoader:
             if missing_rows.empty:
                 continue
 
-            print(f"Missing Vlues in {col}\n")
+            print(f"Missing Vlues in {col}:\n")
             print(missing_rows)
             print("\n\n\n")
 
@@ -39,7 +52,7 @@ class DataLoader:
     def append_song(self, song: Song):
         self.songs.append(song)
 
-        with open("./data/dataset.csv", "a", encoding="utf-8") as f:
+        with open(dataset_path, "a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
 
             writer.writerow(
@@ -66,3 +79,9 @@ class DataLoader:
                     song.track_genre,
                 ]
             )
+
+            f.close()
+
+        with open(dataset_path, "r", encoding="utf-8") as f:
+            self.df = pd.read_csv(f, usecols=lambda col: col != "Unnamed: 0")
+            f.close()
