@@ -1,9 +1,9 @@
 import src.data_cleaner as dc
-from src.data_loader import DataLoader
+import src.data_loader as dl
+import src.data_writer as dw
 from src.song import Song
 from src.data_analyzer import DataAnalyzer
-from src.data_visualizer import DataVisualizer
-from src.data_writer import write_on_file
+import src.data_visualizer as dv
 from time import sleep
 import os
 
@@ -24,16 +24,23 @@ def menu(options):
 
         choice = input(f"Enter Your Choice(1-{n}):\t")
 
-        if int(choice) in range(1, n + 1):
-            clean()
-            return int(choice)
-        else:
+        try:
+            if int(choice) in range(1, n + 1):
+                clean()
+                return int(choice)
+            else:
+                print("Error: Your Input is Invalid! Please Try again")
+                clean(2)
+        except:
             print("Error: Your Input is Invalid! Please Try again")
             clean(2)
 
 
 # CLI Dashboard
-loader = DataLoader()
+loader = dl.DataLoader()
+reporter = dl.Reporter()
+object_manager = dl.ObjectCreator()
+writer = dw.DataWriter()
 
 while True:
     clean()
@@ -52,7 +59,7 @@ while True:
     )
 
     if choice == 1:
-        if not loader.missing_value_report():
+        if not reporter.missing_value_report(loader.df):
             print("There is no missing value.")
             clean(2)
         else:
@@ -77,8 +84,8 @@ while True:
 
             loader.df = dc.KNNDataImputer().impute(loader.df, k)
 
-        write_on_file(loader.df)
-        loader.create_song_obj()
+        writer.write_dataset(loader.df)
+        object_manager.create_from_file(loader.df)
 
         clean()
     elif choice == 3:
@@ -107,13 +114,13 @@ while True:
         else:
             loader.df = dc.Winsorization().handle(loader.df)
 
-        write_on_file(loader.df)
-        loader.create_song_obj()
+        writer.write_dataset(loader.df)
+        object_manager.create_from_file(loader.df)
 
         clean()
     elif choice == 4:
         song = Song.create_from_input()
-        loader.append_song(song)
+        loader.df = object_manager.append_song(song)
 
         clean()
     elif choice == 5:
@@ -211,8 +218,9 @@ while True:
                 input("\n\n\nPress ENTER to return...")
         elif choice == 2:
             genre = input(
-                "Enter Your desired Genre(Input must consist of lowercase letters.):\t"
-            )
+                "Enter Your desired Genre:\t"
+            ).lower()
+
             print("=" * 30)
 
             if analyzer.number_of_tracks_per_genre(genre) == 0:
@@ -322,11 +330,13 @@ while True:
             print(analyzer.correlation_matrix())
             input("\n\n\nPress ENTER to return...")
     elif choice == 6:
-        visualizer = DataVisualizer(loader.df)
-
-        choice = menu(["Histogram", "Box-Plot", "Scatter Plot", "Heatmap", "Pie Plot"])
+        choice = menu(
+            ["Histogram", "Box-Plot", "Scatter Plot", "Heatmap", "Top Genres"]
+        )
 
         if choice == 1:
+            histogram = dv.HistogramPlotter(loader.df)
+
             options = [
                 "Popularity",
                 "Loudness",
@@ -339,8 +349,10 @@ while True:
             ]
             choice = menu(options)
 
-            visualizer.histogram(options[choice - 1].lower())
+            histogram.create_plot(options[choice - 1].lower())
         elif choice == 2:
+            box_plot = dv.BoxPlotter(loader.df)
+
             options = [
                 "Popularity",
                 "Loudness",
@@ -353,8 +365,10 @@ while True:
             ]
             choice = menu(options)
 
-            visualizer.box_plot(options[choice - 1].lower())
+            box_plot.create_plot(options[choice - 1].lower())
         elif choice == 3:
+            scatter = dv.ScatterPlotter(loader.df)
+
             options = [
                 "Popularity",
                 "Loudness",
@@ -370,12 +384,20 @@ while True:
             print("Y axis...")
             choice_2 = menu(options)
 
-            visualizer.scatter(
+            scatter.create_plot(
                 options[choice_1 - 1].lower(), options[choice_2 - 1].lower()
             )
         elif choice == 4:
-            visualizer.heatmap()
+            heatmap = dv.HeatmapPlotter(loader.df)
+            heatmap.create_plot()
         elif choice == 5:
-            visualizer.top_genre()
+            choice = menu(["Pie Chart", "Bar Plot"])
+
+            if choice == 1:
+                pie_chart = dv.PiechartPlotter(loader.df)
+                pie_chart.create_plot()
+            elif choice == 2:
+                bar_plot = dv.BarPlotter(loader.df)
+                bar_plot.create_plot()
     else:
         exit()

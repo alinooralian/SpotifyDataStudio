@@ -133,9 +133,9 @@ class Song:
             raise ValueError("The input must be a boolean.(False/True)")
 
         if value:
-            self.__explicit = "TRUE"
+            self.__explicit = "True"
         else:
-            self.__explicit = "FALSE"
+            self.__explicit = "False"
 
     @property
     def tempo(self):

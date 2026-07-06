@@ -3,13 +3,23 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 from src.data_analyzer import DataAnalyzer
+from abc import ABC, abstractmethod
 
 
-class DataVisualizer:
+class DataVisualizer(ABC):
     def __init__(self, df: pd.DataFrame):
         self.df = df
 
-    def histogram(self, column: str):
+    @abstractmethod
+    def create_plot(self):
+        pass
+
+
+class HistogramPlotter(DataVisualizer):
+    def __init__(self, df: pd.DataFrame):
+        super().__init__(df)
+
+    def create_plot(self, column: str):
         plt.hist(self.df[column], bins=20)
         plt.title(f"Distribution of {column.title()}")
         plt.xlabel(column.title())
@@ -17,12 +27,22 @@ class DataVisualizer:
 
         plt.show()
 
-    def box_plot(self, column: str):
+
+class BoxPlotter(DataVisualizer):
+    def __init__(self, df: pd.DataFrame):
+        super().__init__(df)
+
+    def create_plot(self, column: str):
         sns.boxenplot(x=self.df[column])
         plt.title(f"Distribution of {column.title()}")
         plt.show()
 
-    def scatter(self, x_column: str, y_column: str):
+
+class ScatterPlotter(DataVisualizer):
+    def __init__(self, df: pd.DataFrame):
+        super().__init__(df)
+
+    def create_plot(self, x_column: str, y_column: str):
         plt.title(f"{x_column.title()} Vs {y_column.title()}")
 
         top_genres = self.df["track_genre"].value_counts().head(10).index
@@ -55,7 +75,12 @@ class DataVisualizer:
         plt.legend()
         plt.show()
 
-    def heatmap(self):
+
+class HeatmapPlotter(DataVisualizer):
+    def __init__(self, df: pd.DataFrame):
+        super().__init__(df)
+
+    def create_plot(self):
         da = DataAnalyzer(self.df)
         corr = da.correlation_matrix()
         sns.heatmap(corr, cmap="coolwarm", annot=True)
@@ -63,10 +88,29 @@ class DataVisualizer:
 
         plt.show()
 
-    def top_genre(self):
+
+class PiechartPlotter(DataVisualizer):
+    def __init__(self, df: pd.DataFrame):
+        super().__init__(df)
+
+    def create_plot(self):
         da = DataAnalyzer(self.df)
         data = da.number_tracks_of_each_genre().head(10)
         mylabels = da.number_tracks_of_each_genre().head(10).index
 
         plt.pie(data, labels=mylabels)
+        plt.show()
+
+
+class BarPlotter(DataVisualizer):
+    def __init__(self, df: pd.DataFrame):
+        super().__init__(df)
+
+    def create_plot(self):
+        da = DataAnalyzer(self.df)
+
+        y_axis = da.number_tracks_of_each_genre().head(10)
+        x_axis = da.number_tracks_of_each_genre().head(10).index
+
+        plt.bar(x_axis, y_axis)
         plt.show()
