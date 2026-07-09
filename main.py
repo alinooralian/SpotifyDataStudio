@@ -7,6 +7,8 @@ import src.data_visualizer as dv
 from time import sleep
 import os
 
+ERROR_DELAY = 2
+
 
 def clean(t=0):
     sleep(t)
@@ -18,9 +20,9 @@ def menu(options):
         n = len(options)
 
         for idx, option in enumerate(options, 1):
-            print(f"{idx}.{option}")
+            print(f"{idx}. {option}")
 
-        print("=" * 30)
+        print("-" * 50)
 
         choice = input(f"Enter Your Choice(1-{n}):\t")
 
@@ -30,22 +32,23 @@ def menu(options):
                 return int(choice)
             else:
                 print("Error: Your Input is Invalid! Please Try again")
-                clean(2)
+                clean(ERROR_DELAY)
         except:
             print("Error: Your Input is Invalid! Please Try again")
-            clean(2)
+            clean(ERROR_DELAY)
 
 
 # CLI Dashboard
 loader = dl.DataLoader()
-reporter = dl.Reporter()
+reporter = dl.Reporter(loader.df)
 object_manager = dl.ObjectCreator()
 writer = dw.DataWriter()
 
 while True:
     clean()
 
-    print("=" * 5, "Spotify Data Studio", "=" * 5)
+    print("=" * 10, "Spotify Data Studio", "=" * 10)
+
     choice = menu(
         [
             "Load Dataset & View Missing Vlues Report",
@@ -59,14 +62,16 @@ while True:
     )
 
     if choice == 1:
-        if not reporter.missing_value_report(loader.df):
+        if not reporter.missing_value_report():
             print("There is no missing value.")
-            clean(2)
+            clean(ERROR_DELAY)
         else:
             input("\n\n\nPress ENTER to return...")
     elif choice == 2:
-        loader.df = dc.PreProcessor().nan_remover(loader.df)
-        loader.df = dc.PreProcessor().duplicate_remover(loader.df)
+        Pre_processor = dc.PreProcessor()
+
+        loader.df = Pre_processor.nan_remover(loader.df)
+        loader.df = Pre_processor.duplicate_remover(loader.df)
 
         choice = menu(["Mean", "Median", "KNN"])
 
@@ -78,11 +83,10 @@ while True:
             while True:
                 try:
                     k = int(input("Please Enter K(Recommended -> 5):\t"))
+                    loader.df = dc.KNNDataImputer().impute(loader.df, k)
                     break
                 except:
                     print("Error: Your input is invalid! Please try again.")
-
-            loader.df = dc.KNNDataImputer().impute(loader.df, k)
 
         writer.write_dataset(loader.df)
         object_manager.create_from_file(loader.df)
@@ -95,22 +99,21 @@ while True:
             while True:
                 try:
                     factor = float(input("Please Enter Factor(Recommended -> 1.5):\t"))
+                    loader.df = dc.IQROutlierHandler().handle(loader.df, factor)
                     break
                 except:
                     print("Error: Your input is invalid! Please try again.")
 
-            loader.df = dc.IQROutlierHandler().handle(loader.df, factor)
         elif choice == 2:
             while True:
                 try:
                     threshold = float(
                         input("Please Enter Threshold(Recommended -> 3):\t")
                     )
+                    loader.df = dc.ZScoreOutlierHandler().handle(loader.df, threshold)
                     break
                 except:
                     print("Error: Your input is invalid! Please try again.")
-
-            loader.df = dc.ZScoreOutlierHandler().handle(loader.df, threshold)
         else:
             loader.df = dc.Winsorization().handle(loader.df)
 
@@ -217,17 +220,15 @@ while True:
 
                 input("\n\n\nPress ENTER to return...")
         elif choice == 2:
-            genre = input(
-                "Enter Your desired Genre:\t"
-            ).lower()
+            genre = input("Enter Your desired Genre:\t").lower()
 
-            print("=" * 30)
+            print("=" * 50)
 
             if analyzer.number_of_tracks_per_genre(genre) == 0:
                 print(
                     "There is no information for this genre! Either change the input type or select another genre."
                 )
-                clean(2)
+                clean(ERROR_DELAY)
                 continue
 
             choice = menu(

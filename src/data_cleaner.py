@@ -42,12 +42,21 @@ class MedianDataImputer(BaseImputer):
 
 class KNNDataImputer(BaseImputer):
     def impute(self, df: pd.DataFrame, k=5):
+        if k <= 0:
+            raise ValueError("Error: Your input is invalid! Please try again.")
+
         numeric_cols = df.select_dtypes("number").columns
+
+        if numeric_cols.empty:
+            return df
+
         numeric_features = df[numeric_cols]
 
-        imputer = KNNImputer(n_neighbors=k)
+        imputer = KNNImputer(n_neighbors=min(k, len(df)))
         numeric_df = pd.DataFrame(
-            imputer.fit_transform(numeric_features), columns=numeric_cols
+            imputer.fit_transform(numeric_features),
+            columns=numeric_cols,
+            index=df.index,
         )
 
         new_df = df.copy()
@@ -69,6 +78,9 @@ class BaseOutlierHandler(ABC):
 
 class IQROutlierHandler(BaseOutlierHandler):
     def handle(self, df: pd.DataFrame, factor=1.5):
+        if factor <= 0:
+            raise ValueError("Error: Your input is invalid! Please try again.")
+
         numeric_cols = self.categories_df(df, "number").columns
 
         for col in numeric_cols:
@@ -88,6 +100,9 @@ class IQROutlierHandler(BaseOutlierHandler):
 
 class ZScoreOutlierHandler(BaseOutlierHandler):
     def handle(self, df: pd.DataFrame, threshold=3):
+        if threshold <= 0:
+            raise ValueError("Error: Your input is invalid! Please try again.")
+
         numeric_cols = self.categories_df(df, "number").columns
 
         for col in numeric_cols:

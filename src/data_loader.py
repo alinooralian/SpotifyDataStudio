@@ -23,13 +23,16 @@ class DataLoader:
 
 
 class Reporter:
-    def missing_value_report(self, df: pd.DataFrame):
+    def __init__(self, df:pd.DataFrame):
+        self.df = df
+
+    def missing_value_report(self):
         check = False
-        cols = df.columns
+        cols = self.df.columns
 
         for col in cols:
-            bool_series = pd.isnull(df[col])
-            missing_rows = df[bool_series]
+            bool_series = pd.isnull(self.df[col])
+            missing_rows = self.df[bool_series]
 
             if missing_rows.empty:
                 continue
