@@ -41,11 +41,12 @@ class BoxPlotter(DataVisualizer):
 class ScatterPlotter(DataVisualizer):
     def __init__(self, df: pd.DataFrame):
         super().__init__(df)
+        self.da = DataAnalyzer(self.df)
 
     def create_plot(self, x_column: str, y_column: str):
         plt.title(f"{x_column.title()} Vs {y_column.title()}")
 
-        top_genres = self.df["track_genre"].value_counts().head(10).index
+        top_genres = self.da.number_tracks_of_each_genre().head(10).index
         filtered_df = self.df[self.df["track_genre"].isin(top_genres)]
 
         colors = np.array(
@@ -79,10 +80,10 @@ class ScatterPlotter(DataVisualizer):
 class HeatmapPlotter(DataVisualizer):
     def __init__(self, df: pd.DataFrame):
         super().__init__(df)
+        self.da = DataAnalyzer(self.df)
 
     def create_plot(self):
-        da = DataAnalyzer(self.df)
-        corr = da.correlation_matrix()
+        corr = self.da.correlation_matrix()
         sns.heatmap(corr, cmap="coolwarm", annot=True)
         plt.title("Correlation Matrix")
 
@@ -92,11 +93,11 @@ class HeatmapPlotter(DataVisualizer):
 class PiechartPlotter(DataVisualizer):
     def __init__(self, df: pd.DataFrame):
         super().__init__(df)
+        self.da = DataAnalyzer(self.df)
 
     def create_plot(self):
-        da = DataAnalyzer(self.df)
-        data = da.number_tracks_of_each_genre().head(10)
-        mylabels = da.number_tracks_of_each_genre().head(10).index
+        data = self.da.number_tracks_of_each_genre().head(10)
+        mylabels = self.da.number_tracks_of_each_genre().head(10).index
 
         plt.pie(data, labels=mylabels)
         plt.show()
@@ -105,12 +106,11 @@ class PiechartPlotter(DataVisualizer):
 class BarPlotter(DataVisualizer):
     def __init__(self, df: pd.DataFrame):
         super().__init__(df)
+        self.da = DataAnalyzer(self.df)
 
     def create_plot(self):
-        da = DataAnalyzer(self.df)
-
-        y_axis = da.number_tracks_of_each_genre().head(10)
-        x_axis = da.number_tracks_of_each_genre().head(10).index
+        y_axis = self.da.number_tracks_of_each_genre().head(10)
+        x_axis = self.da.number_tracks_of_each_genre().head(10).index
 
         plt.bar(x_axis, y_axis)
         plt.show()

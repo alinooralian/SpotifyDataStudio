@@ -1,15 +1,13 @@
 import pandas as pd
 from src.song import Song
-from src.data_finder import DataFinder
+from src.data_finder import resource_path
 from src.data_writer import DataWriter
-
-
-dataset_path = DataFinder().resource_path("data/dataset.csv")
 
 
 class DataLoader:
     def __init__(self):
-        with open(dataset_path, "r", encoding="utf-8") as f:
+        self.__dataset_path = resource_path("data/dataset.csv")
+        with open(self.__dataset_path, "r", encoding="utf-8") as f:
             self.__df = pd.read_csv(f, usecols=lambda col: col != "Unnamed: 0")
             f.close()
 
@@ -22,8 +20,8 @@ class DataLoader:
         self.__df = df
 
 
-class Reporter:
-    def __init__(self, df:pd.DataFrame):
+class DataReporter:
+    def __init__(self, df: pd.DataFrame):
         self.df = df
 
     def missing_value_report(self):
@@ -37,7 +35,7 @@ class Reporter:
             if missing_rows.empty:
                 continue
 
-            print(f"Missing Vlues in {col}:\n")
+            print(f"Missing Values in {col}:\n")
             print(missing_rows)
             print("\n\n\n")
 
@@ -51,12 +49,12 @@ class ObjectCreator:
     dw = DataWriter()
 
     def create_from_file(self, df: pd.DataFrame):
-        self.songs.clear()
+        ObjectCreator.songs.clear()
 
         for _, line in df.iterrows():
             song = Song(dict(line))
-            self.songs.append(song)
+            ObjectCreator.songs.append(song)
 
     def append_song(self, song: Song):
-        self.songs.append(song)
-        return self.dw.append_line(song)
+        ObjectCreator.songs.append(song)
+        return ObjectCreator.dw.append_line(song)

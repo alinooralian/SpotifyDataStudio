@@ -1,4 +1,4 @@
-from src.data_finder import DataFinder
+from src.data_finder import resource_path
 from src.song import Song
 import pandas as pd
 import csv
@@ -6,7 +6,7 @@ import csv
 
 class DataWriter:
     def __init__(self):
-        self.__dataset_path = DataFinder().resource_path("data/dataset.csv")
+        self.__dataset_path = resource_path("data/dataset.csv")
 
     def write_dataset(self, df: pd.DataFrame):
         df.to_csv(self.__dataset_path, encoding="utf-8", index=False, header=True)

@@ -76,6 +76,9 @@ class Song:
         except:
             raise ValueError("The input must be a number.")
 
+        if value < 0:
+            raise ValueError("The input must positive.")
+
         self.__duration_ms = value
 
     @property
@@ -148,6 +151,9 @@ class Song:
         except:
             raise ValueError("The input must be a number.")
 
+        if value < 0:
+            raise ValueError("The input must positive.")
+
         self.__tempo = value
 
     @property
@@ -174,6 +180,9 @@ class Song:
         except:
             raise ValueError("The input must be a number.")
 
+        if value < 0:
+            raise ValueError("The input must positive.")
+
         self.__time_signature = value
 
     @property
@@ -184,6 +193,9 @@ class Song:
     def track_genre(self, value: str):
         if len(value.strip()) == 0:
             raise ValueError("You must enter at least one letter or number.")
+
+        if value.isdigit():
+            raise ValueError("The input must contain at least one letter.")
 
         self.__track_genre = value
 

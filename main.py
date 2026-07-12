@@ -6,6 +6,7 @@ from src.data_analyzer import DataAnalyzer
 import src.data_visualizer as dv
 from time import sleep
 import os
+import sys
 
 ERROR_DELAY = 2
 
@@ -40,7 +41,7 @@ def menu(options):
 
 # CLI Dashboard
 loader = dl.DataLoader()
-reporter = dl.Reporter(loader.df)
+reporter = dl.DataReporter(loader.df)
 object_manager = dl.ObjectCreator()
 writer = dw.DataWriter()
 
@@ -62,6 +63,8 @@ while True:
     )
 
     if choice == 1:
+        reporter.df = loader.df
+
         if not reporter.missing_value_report():
             print("There is no missing value.")
             clean(ERROR_DELAY)
@@ -401,4 +404,4 @@ while True:
                 bar_plot = dv.BarPlotter(loader.df)
                 bar_plot.create_plot()
     else:
-        exit()
+        sys.exit(0)
